@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerar Aves 🦅</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(120deg, #a8e6cf, #dcedc1);
+      color: #2e7d32;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-top: 40px;
+      color: #2e7d32;
+      text-shadow: 1px 1px 2px #a5d6a7;
+    }
+
+    p {
+      font-size: 20px;
+      color: #388e3c;
+      margin-bottom: 30px;
+    }
+
+    .jogo-container {
+      width: 90%;
+      max-width: 800px;
+      height: 400px;
+      background-color: #ffffff;
+      margin: 0 auto 30px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .ave {
+      font-size: 40px;
+      position: absolute;
+      transform: translateY(-50%);
+      animation: voar 4s linear infinite;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    @keyframes voar {
+      0% {
+        left: -70px;
+      }
+      100% {
+        left: 100%;
+      }
+    }
+
+    .botao-iniciar {
+      padding: 14px 30px;
+      background: linear-gradient(to right, #66bb6a, #43a047);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .botao-iniciar:hover {
+      background: linear-gradient(to right, #81c784, #66bb6a);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🦅 Gerador de Aves</h1>
+  <p>Conte quantas aves passam pela tela!</p>
+
+  <div class="jogo-container" id="container"></div>
+
+  <button class="botao-iniciar" onclick="iniciarJogo()">Iniciar Jogo</button>
+
+  <script>
+    let jogoAtivo = false;
+    const container = document.getElementById("container");
+
+    function iniciarJogo() {
+      if (jogoAtivo) return;
+      jogoAtivo = true;
+
+      let intervalo = setInterval(() => {
+        if (!jogoAtivo) {
+          clearInterval(intervalo);
+          return;
+        }
+        criarAve();
+      }, 800);
+
+      setTimeout(() => {
+        jogoAtivo = false;
+        alert("Jogo finalizado! Você será redirecionado para a contagem de aves.");
+        window.location.href = "contador-aves.html";
+      }, 15000);
+    }
+
+    function criarAve() {
+      const ave = document.createElement("div");
+      ave.classList.add("ave");
+      ave.textContent = "🦅";
+
+      const posicaoY = Math.random() * 80 + 10;
+      ave.style.top = `${posicaoY}%`;
+
+      container.appendChild(ave);
+
+      setTimeout(() => {
+        ave.remove();
+      }, 4000);
+    }
+  </script>
+
+</body>
+</html>

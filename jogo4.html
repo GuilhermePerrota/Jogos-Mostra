@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jogo 2 - Proteja as Aves</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    #labirinto {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      margin-top: 10px;
+      background-color: #ffffffaa;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .celula {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .parede {
+      background-color: #c8e6c9;
+      border-radius: 8px;
+    }
+
+    .saida {
+      background-color: #81c784;
+      border-radius: 8px;
+    }
+
+    #player {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      background-color: transparent;
+      font-size: 28px;
+      z-index: 10;
+    }
+
+    #mensagem {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #1b5e20;
+      text-align: center;
+    }
+
+    .botao-final {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #66bb6a;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: background-color 0.3s, transform 0.2s;
+      display: none;
+    }
+
+    .botao-final:hover {
+      background-color: #4caf50;
+      transform: scale(1.05);
+    }
+
+    .controles {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: 60px 60px 60px;
+      grid-template-rows: 60px 60px 60px;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .botao-controle {
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      border-radius: 50%;
+      border: none;
+      background-color: #a5d6a7;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .botao-controle:hover {
+      background-color: #81c784;
+      transform: scale(1.1);
+    }
+
+    #telaCarregamento {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐦 Ajude o pássaro voltar para seu habitat</h1>
+  <div id="telaCarregamento">Carregando o labirinto...</div>
+  <div id="labirinto"></div>
+  <div id="player">🐦</div>
+  <div id="mensagem"></div>
+  <button class="botao-final" id="btnFinal" onclick="voltarMenu()">Voltar ao Menu</button>
+
+  <div class="controles">
+    <div></div>
+    <button class="botao-controle" onclick="moverJogador('up')">⬆️</button>
+    <div></div>
+    <button class="botao-controle" onclick="moverJogador('left')">⬅️</button>
+    <div></div>
+    <button class="botao-controle" onclick="moverJogador('right')">➡️</button>
+    <div></div>
+    <button class="botao-controle" onclick="moverJogador('down')">⬇️</button>
+    <div></div>
+  </div>
+
+  <script>
+    const labirinto = document.getElementById("labirinto");
+    const player = document.getElementById("player");
+    const telaCarregamento = document.getElementById("telaCarregamento");
+    const tamanhoLabirinto = 10;
+    const tamanhoCelula = 40;
+
+    const paredes = [
+      [0, 3], [0, 4], [0, 6], [0, 7], [0, 8], [1, 1], [1, 7], [2, 1],
+      [2, 3], [2, 4], [2, 5], [2, 7], [2, 9], [3, 1], [3, 9], [4, 1],
+      [4, 2], [4, 4], [4, 5], [4, 6], [4, 7], [4, 9], [5, 7], [6, 1],
+      [6, 3], [6, 4], [6, 5], [6, 6], [6, 9], [7, 0], [7, 1], [7, 5],
+      [7, 6], [7, 8], [7, 9], [8, 0], [8, 3], [8, 6], [8, 8], [8, 9],
+      [9, 2], [9, 3], [9, 4], [9, 6]
+    ];
+
+    let playerPos = { x: 0, y: 0 };
+    let objetivo = { x: 9, y: 9 };
+
+    function criarLabirinto() {
+      labirinto.innerHTML = "";
+
+      for (let linha = 0; linha < tamanhoLabirinto; linha++) {
+        for (let coluna = 0; coluna < tamanhoLabirinto; coluna++) {
+          const celula = document.createElement("div");
+          celula.classList.add("celula");
+
+          celula.style.top = `${linha * tamanhoCelula}px`;
+          celula.style.left = `${coluna * tamanhoCelula}px`;
+
+          if (paredes.some(p => p[0] === linha && p[1] === coluna)) {
+            celula.classList.add("parede");
+            celula.innerText = "🌿";
+          } else if (linha === objetivo.y && coluna === objetivo.x) {
+            celula.classList.add("saida");
+            celula.innerText = "🚪";
+          } else {
+            celula.innerText = "";
+          }
+
+          labirinto.appendChild(celula);
+        }
+      }
+
+      labirinto.style.display = "block";
+      atualizarPosicaoJogador();
+      telaCarregamento.style.display = "none";
+    }
+
+    function temParede(x, y) {
+      return paredes.some(p => p[0] === y && p[1] === x);
+    }
+
+    function atualizarPosicaoJogador() {
+      player.style.top = `${labirinto.offsetTop + playerPos.y * tamanhoCelula + 2}px`;
+      player.style.left = `${labirinto.offsetLeft + playerPos.x * tamanhoCelula + 2}px`;
+    }
+
+    function moverJogador(direcao) {
+      let { x, y } = playerPos;
+
+      if (direcao === 'up' && y > 0 && !temParede(x, y - 1)) y--;
+      if (direcao === 'down' && y < tamanhoLabirinto - 1 && !temParede(x, y + 1)) y++;
+      if (direcao === 'left' && x > 0 && !temParede(x - 1, y)) x--;
+      if (direcao === 'right' && x < tamanhoLabirinto - 1 && !temParede(x + 1, y)) x++;
+
+      playerPos = { x, y };
+      atualizarPosicaoJogador();
+      verificarObjetivo();
+    }
+
+    function verificarObjetivo() {
+      if (playerPos.x === objetivo.x && playerPos.y === objetivo.y) {
+        localStorage.setItem("jogo4_Concluido", "true");
+
+        document.getElementById("mensagem").innerHTML = `🎉 Parabéns! Você chegou à saída ecológica!`;
+        document.getElementById("btnFinal").style.display = "inline-block";
+      }
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowUp") moverJogador('up');
+      if (event.key === "ArrowDown") moverJogador('down');
+      if (event.key === "ArrowLeft") moverJogador('left');
+      if (event.key === "ArrowRight") moverJogador('right');
+    });
+
+    function voltarMenu() {
+      localStorage.setItem("jogo4_concluido", "true");
+      window.location.href = "index.html";
+    }
+
+    criarLabirinto();
+  </script>
+</body>
+</html>

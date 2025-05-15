@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo 1 - Recicle Certo</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      text-align: center;
+      background: radial-gradient(circle, #dcedc8, #a5d6a7);
+      color: #1b5e20;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin-top: 30px;
+      font-size: 2.2em;
+      color: #2e7d32;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    #status {
+      margin: 15px 0;
+      font-size: 1.2em;
+      background: #f1f8e9;
+      padding: 10px 20px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #game {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .item {
+      font-size: 2.5rem;
+      background: white;
+      border-radius: 16px;
+      padding: 20px 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .item:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    #mensagem-final {
+      margin-top: 25px;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    #voltar {
+      margin-top: 25px;
+      padding: 12px 24px;
+      background: #388e3c;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1em;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background 0.2s;
+    }
+
+    #voltar:hover {
+      background: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>♻️ Jogo 1: Recicle Certo!</h1>
+  <p>Clique apenas nos itens recicláveis!</p>
+  <div id="status">
+    Pontos: <span id="pontos">0</span> | Vidas: <span id="vidas">3</span>
+  </div>
+
+  <div id="game"></div>
+  <div id="mensagem-final"></div>
+  <button id="voltar" onclick="voltar()">⬅️ Voltar para a Tela Inicial</button>
+
+  <script>
+    const reciclaveis = ["📄", "🍾", "📦", "📰", "🧃"];
+    const naoReciclaveis = ["🍗", "🍌", "💩", "🧻", "🥩"];
+    const todos = [...reciclaveis, ...naoReciclaveis];
+
+    let pontos = 0;
+    let vidas = 3;
+    const necessario = reciclaveis.length;
+
+    const game = document.getElementById("game");
+    const pontosEl = document.getElementById("pontos");
+    const vidasEl = document.getElementById("vidas");
+    const finalEl = document.getElementById("mensagem-final");
+    const voltarBtn = document.getElementById("voltar");
+
+    function embaralhar(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function criarJogo() {
+      game.innerHTML = "";
+      const itens = embaralhar(todos);
+      itens.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.textContent = item;
+        div.onclick = () => verificar(item, div);
+        game.appendChild(div);
+      });
+    }
+
+    function verificar(item, el) {
+      if (reciclaveis.includes(item)) {
+        pontos++;
+        pontosEl.textContent = pontos;
+        el.style.visibility = "hidden";
+      } else {
+        vidas--;
+        vidasEl.textContent = vidas;
+        el.style.border = "3px solid red";
+      }
+      fim();
+    }
+
+    function fim() {
+      if (pontos === necessario) {
+        finalEl.textContent = "✅ Parabéns! Você reciclou corretamente!";
+        localStorage.setItem("jogo1_concluido", "true");
+        encerrar();
+      } else if (vidas === 0) {
+        finalEl.textContent = "❌ Fim de jogo! Tente novamente.";
+        encerrar();
+      }
+    }
+
+    function encerrar() {
+      game.innerHTML = "";
+      voltarBtn.style.display = "inline-block";
+    }
+
+    function voltar() {
+      window.location.href = "index.html";
+    }
+
+    criarJogo();
+  </script>
+</body>
+</html>

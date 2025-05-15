@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Verde ❓</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #c8e6c9, #a5d6a7);
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 30px;
+      font-size: 36px;
+      color: #1b5e20;
+    }
+
+    p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .pergunta {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #33691e;
+    }
+
+    .opcoes {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .opcao {
+      padding: 12px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .opcao:hover {
+      background-color: #66bb6a;
+      transform: translateY(-2px);
+    }
+
+    #mensagem {
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #1b5e20;
+    }
+
+    #pontos {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #2e7d32;
+    }
+
+    .botao-final {
+      padding: 14px 30px;
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 18px;
+      margin: 30px 0;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .botao-final:hover {
+      background-color: #66bb6a;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>❓ Quiz Verde</h1>
+  <p>Responda as perguntas sobre ecologia!</p>
+
+  <div class="quiz-container">
+    <div class="pergunta" id="pergunta"></div>
+    <div class="opcoes" id="opcoes"></div>
+  </div>
+
+  <div id="mensagem"></div>
+  <div id="pontos"></div>
+
+  <button class="botao-final" id="btnFinal" style="display: none;" onclick="voltarMenu()">Voltar ao Menu</button>
+
+  <script>
+    const perguntas = [
+      {
+        pergunta: "Qual é o gás que mais contribui para o efeito estufa?",
+        opcoes: ["Oxigênio", "Dióxido de carbono", "Nitrogênio", "Água"],
+        respostaCorreta: 1
+      },
+      {
+        pergunta: "O que é o processo de fotossíntese?",
+        opcoes: [
+          "Conversão de energia solar em energia química",
+          "Processo de decomposição",
+          "Processo de respiração",
+          "Propriedade dos animais"
+        ],
+        respostaCorreta: 0
+      },
+      {
+        pergunta: "Qual dos seguintes é um recurso renovável?",
+        opcoes: ["Carvão", "Água", "Petróleo", "Gás natural"],
+        respostaCorreta: 1
+      },
+      {
+        pergunta: "O que é a reciclagem?",
+        opcoes: [
+          "Transformar lixo em energia",
+          "Transformar materiais usados em novos produtos",
+          "Processo de compostagem",
+          "Uso de energia solar"
+        ],
+        respostaCorreta: 1
+      }
+    ];
+
+    let indiceAtual = 0;
+    let acertos = 0;
+    let pontos = parseInt(localStorage.getItem("pontos")) || 0;
+
+    function exibirPergunta() {
+      const pergunta = perguntas[indiceAtual];
+      document.getElementById("pergunta").innerText = pergunta.pergunta;
+
+      const opcoes = document.getElementById("opcoes");
+      opcoes.innerHTML = "";
+
+      pergunta.opcoes.forEach((opcao, index) => {
+        const botao = document.createElement("button");
+        botao.className = "opcao";
+        botao.innerText = opcao;
+        botao.onclick = () => verificarResposta(index);
+        opcoes.appendChild(botao);
+      });
+    }
+
+    function verificarResposta(index) {
+      const pergunta = perguntas[indiceAtual];
+      if (index === pergunta.respostaCorreta) {
+        acertos++;
+      }
+
+      indiceAtual++;
+      if (indiceAtual < perguntas.length) {
+        exibirPergunta();
+      } else {
+        exibirResultado();
+      }
+    }
+
+    function exibirResultado() {
+      const mensagem = document.getElementById("mensagem");
+      const pontosEl = document.getElementById("pontos");
+
+      if (acertos === perguntas.length) {
+        mensagem.innerHTML = "🎉 Você acertou todas as perguntas!";
+        pontos += 1;
+        localStorage.setItem("pontos", pontos);
+        localStorage.setItem("jogo3_concluido", "true");
+      } else {
+        mensagem.innerHTML = `Você acertou ${acertos} de ${perguntas.length} perguntas.`;
+      }
+
+      pontosEl.innerText = `Pontos: ${pontos}`;
+      document.getElementById("btnFinal").style.display = "inline-block";
+    }
+
+    function voltarMenu() {
+      window.location.href = "index.html";
+    }
+
+    exibirPergunta();
+  </script>
+
+</body>
+</html>

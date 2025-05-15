@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Palpite de Aves</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 50px 20px;
+      background: linear-gradient(to right, #81c784, #66bb6a);
+      color: #1b5e20;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      color: #2e7d32;
+      text-shadow: 1px 1px 2px #c8e6c9;
+    }
+
+    input {
+      padding: 12px;
+      font-size: 18px;
+      border-radius: 12px;
+      border: 1px solid #2e7d32;
+      width: 80%;
+      max-width: 300px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #1b5e20;
+      box-shadow: 0 0 8px #a5d6a7;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 18px;
+      border-radius: 30px;
+      border: none;
+      background: linear-gradient(to right, #388e3c, #2e7d32);
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+      margin-top: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #66bb6a, #43a047);
+      transform: scale(1.05);
+    }
+
+    .resultado {
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: bold;
+      min-height: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🐦 Quantas aves passaram?</h1>
+
+  <input type="text" id="palpite" placeholder="Digite a quantidade" />
+  <br>
+  <button onclick="verificarPalpite()">Verificar</button>
+
+  <div class="resultado" id="resultado"></div>
+
+  <script>
+    const aveCorreta = "18";
+    let pontos = parseInt(localStorage.getItem("pontos")) || 0;
+
+    function verificarPalpite() {
+      const palpite = document.getElementById("palpite").value.trim().toLowerCase();
+      const resultado = document.getElementById("resultado");
+
+      if (palpite === "") {
+        resultado.textContent = "Por favor, digite um palpite!";
+        resultado.style.color = "orange";
+      } else if (palpite === aveCorreta) {
+        resultado.textContent = "✅ Parabéns! Você reciclou corretamente!";
+        resultado.style.color = "green";
+        localStorage.setItem("jogo2_concluido", "true");
+
+        pontos += 1;
+        localStorage.setItem("pontos", pontos);
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+      } else {
+        resultado.textContent = "❌ Errou! Tente novamente.";
+        resultado.style.color = "red";
+      }
+    }
+  </script>
+
+</body>
+</html>

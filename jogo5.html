@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jogo da Memória 🌱</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #c8e6c9, #a5d6a7);
+      text-align: center;
+    }
+
+    h1 {
+      color: #388e3c;
+      margin-top: 20px;
+    }
+
+    .tabuleiro {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: max-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .carta {
+      width: 100px;
+      height: 100px;
+      background-color: #8bc34a;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s, background-color 0.3s;
+      user-select: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .carta.virada {
+      background-color: #388e3c;
+      transform: rotateY(180deg);
+    }
+
+    .carta.completa {
+      background-color: #66bb6a;
+      cursor: default;
+    }
+
+    .botao-final {
+      padding: 12px 25px;
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 20px;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+      display: none;
+    }
+
+    .botao-final:hover {
+      background-color: #66bb6a;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌱 Jogo da Memória</h1>
+  <p>Encontre todos os pares para ajudar o planeta!</p>
+
+  <div id="tabuleiro" class="tabuleiro"></div>
+
+  <button id="btnFinal" class="botao-final" onclick="voltarMenu()">Voltar ao Menu</button>
+
+  <script>
+    // Apenas 4 pares, total 8 cartas
+    const emojis = ['🍀','🍄','🌻','🌲'];
+    let cartas = [];
+    let primeiraCarta = null;
+    let bloqueado = false;
+    let paresEncontrados = 0;
+    let pontos = parseInt(localStorage.getItem("pontos")) || 0;
+
+    const tabuleiro = document.getElementById("tabuleiro");
+    const botaoFinal = document.getElementById("btnFinal");
+
+    function atualizarPontuacao() {
+      localStorage.setItem("pontos", pontos);
+    }
+
+    function criarCartas() {
+      cartas = [...emojis, ...emojis]
+        .sort(() => 0.5 - Math.random())
+        .map((emoji, index) => {
+          const div = document.createElement("div");
+          div.classList.add("carta");
+          div.dataset.emoji = emoji;
+          div.dataset.index = index;
+          div.addEventListener("click", virarCarta);
+          tabuleiro.appendChild(div);
+          return div;
+        });
+    }
+
+    function virarCarta() {
+      if (bloqueado || this.classList.contains("virada") || this.classList.contains("completa")) return;
+
+      this.classList.add("virada");
+      this.innerText = this.dataset.emoji;
+
+      if (!primeiraCarta) {
+        primeiraCarta = this;
+      } else {
+        bloqueado = true;
+        const segundaCarta = this;
+        if (primeiraCarta.dataset.emoji === segundaCarta.dataset.emoji) {
+          primeiraCarta.classList.add("completa");
+          segundaCarta.classList.add("completa");
+          pontos++;
+          paresEncontrados++;
+          atualizarPontuacao();
+
+          if (paresEncontrados === emojis.length) {
+            botaoFinal.style.display = "inline-block";
+          }
+
+          resetarViradas();
+        } else {
+          setTimeout(() => {
+            primeiraCarta.classList.remove("virada");
+            segundaCarta.classList.remove("virada");
+            primeiraCarta.innerText = "";
+            segundaCarta.innerText = "";
+            resetarViradas();
+          }, 1000);
+        }
+      }
+    }
+
+    function resetarViradas() {
+      primeiraCarta = null;
+      bloqueado = false;
+    }
+
+    function voltarMenu() {
+      localStorage.setItem("jogo5_concluido", "true");
+
+      pontos += 1;
+        localStorage.setItem("pontos", pontos);
+      window.location.href = "index.html";
+    }
+
+    atualizarPontuacao();
+    criarCartas();
+  </script>
+
+</body>
+</html>
